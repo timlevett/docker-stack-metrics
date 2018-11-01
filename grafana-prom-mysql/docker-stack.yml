@@ -1,0 +1,55 @@
+version: "3.4"
+configs:
+  prometheus_config_1_0_0:
+    file: ./prometheus.yml
+services:
+  # mysql service
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/mysql:/var/lib/mysql
+  # prometheus service
+  prometheus:
+    image: prom/prometheus:v2.4.3
+    configs:
+      - source: prometheus_config_1_0_0
+        target: /etc/prometheus/prometheus.yml
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 500M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    ports:
+      - "8000:9090"
+    volumes:
+      - /data/prometheus:/prometheus
+  # Grafana 
+  grafana:
+    image: grafana/grafana:5.3.2
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 500M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    ports:
+      - "8001:3000"
+    volumes:
+      - /data/grafana:/var/lib/grafana
