@@ -40,6 +40,8 @@ services:
   # Grafana 
   grafana:
     image: grafana/grafana:5.3.2
+    environment:
+      GF_INSTALL_PLUGINS: natel-plotly-panel
     deploy:
       replicas: 1
       resources:
