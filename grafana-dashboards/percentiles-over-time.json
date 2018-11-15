@@ -1,0 +1,866 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": 3,
+    "iteration": 1542316867283,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 6,
+        "panels": [],
+        "repeat": "issue_type",
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          }
+        },
+        "title": "$issue_type",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "mysql",
+        "fill": 1,
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 24,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": false,
+          "total": false,
+          "values": false
+        },
+        "lines": false,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "percentage": false,
+        "pointradius": 4,
+        "points": true,
+        "renderer": "flot",
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "",
+            "format": "time_series",
+            "rawSql": "SELECT issue_id, sum(status_duration_hours) as status_duration_hours, max(status_end) as time_sec FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "$issue_type Cycle Time",
+        "tooltip": {
+          "shared": false,
+          "sort": 2,
+          "value_type": "individual"
+        },
+        "transparent": true,
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 10,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "columns": [],
+        "datasource": "mysql",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 4.8,
+          "x": 0,
+          "y": 9
+        },
+        "id": 14,
+        "links": [],
+        "minSpan": 2,
+        "pageSize": null,
+        "repeat": "period",
+        "repeatDirection": "h",
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          },
+          "period": {
+            "selected": true,
+            "text": "Freedom",
+            "value": "Freedom"
+          }
+        },
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 0,
+          "desc": true
+        },
+        "styles": [
+          {
+            "alias": "Hours",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "status_duration_hours",
+            "thresholds": [
+              ""
+            ],
+            "type": "number",
+            "unit": "h"
+          },
+          {
+            "alias": "Percentile",
+            "colorMode": "row",
+            "colors": [
+              "#508642",
+              "rgba(237, 129, 40, 0.89)",
+              "#cca300"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "percentile_rank",
+            "thresholds": [
+              "56",
+              "78",
+              "100"
+            ],
+            "type": "number",
+            "unit": "percent"
+          },
+          {
+            "alias": "",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "/.*/",
+            "thresholds": [],
+            "type": "string",
+            "unit": "short"
+          }
+        ],
+        "targets": [
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 25 AND 55)\norder by 1 desc\nlimit 1",
+            "refId": "A"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 56 AND 77)\norder by 1 desc\nlimit 1\n   ",
+            "refId": "B"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 78 AND 96)\norder by 1 desc\nlimit 1",
+            "refId": "C"
+          }
+        ],
+        "title": "$period Percentiles",
+        "transform": "table",
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "columns": [],
+        "datasource": "mysql",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 4.8,
+          "x": 4.8,
+          "y": 9
+        },
+        "id": 25,
+        "links": [],
+        "minSpan": 2,
+        "pageSize": null,
+        "repeat": null,
+        "repeatDirection": "h",
+        "repeatIteration": 1542316867283,
+        "repeatPanelId": 14,
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          },
+          "period": {
+            "selected": true,
+            "text": "Griffin",
+            "value": "Griffin"
+          }
+        },
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 0,
+          "desc": true
+        },
+        "styles": [
+          {
+            "alias": "Hours",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "status_duration_hours",
+            "thresholds": [
+              ""
+            ],
+            "type": "number",
+            "unit": "h"
+          },
+          {
+            "alias": "Percentile",
+            "colorMode": "row",
+            "colors": [
+              "#508642",
+              "rgba(237, 129, 40, 0.89)",
+              "#cca300"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "percentile_rank",
+            "thresholds": [
+              "56",
+              "78",
+              "100"
+            ],
+            "type": "number",
+            "unit": "percent"
+          },
+          {
+            "alias": "",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "/.*/",
+            "thresholds": [],
+            "type": "string",
+            "unit": "short"
+          }
+        ],
+        "targets": [
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 25 AND 55)\norder by 1 desc\nlimit 1",
+            "refId": "A"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 56 AND 77)\norder by 1 desc\nlimit 1\n   ",
+            "refId": "B"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 78 AND 96)\norder by 1 desc\nlimit 1",
+            "refId": "C"
+          }
+        ],
+        "title": "$period Percentiles",
+        "transform": "table",
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "columns": [],
+        "datasource": "mysql",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 4.8,
+          "x": 9.6,
+          "y": 9
+        },
+        "id": 26,
+        "links": [],
+        "minSpan": 2,
+        "pageSize": null,
+        "repeat": null,
+        "repeatDirection": "h",
+        "repeatIteration": 1542316867283,
+        "repeatPanelId": 14,
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          },
+          "period": {
+            "selected": true,
+            "text": "Hawk",
+            "value": "Hawk"
+          }
+        },
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 0,
+          "desc": true
+        },
+        "styles": [
+          {
+            "alias": "Hours",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "status_duration_hours",
+            "thresholds": [
+              ""
+            ],
+            "type": "number",
+            "unit": "h"
+          },
+          {
+            "alias": "Percentile",
+            "colorMode": "row",
+            "colors": [
+              "#508642",
+              "rgba(237, 129, 40, 0.89)",
+              "#cca300"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "percentile_rank",
+            "thresholds": [
+              "56",
+              "78",
+              "100"
+            ],
+            "type": "number",
+            "unit": "percent"
+          },
+          {
+            "alias": "",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "/.*/",
+            "thresholds": [],
+            "type": "string",
+            "unit": "short"
+          }
+        ],
+        "targets": [
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 25 AND 55)\norder by 1 desc\nlimit 1",
+            "refId": "A"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 56 AND 77)\norder by 1 desc\nlimit 1\n   ",
+            "refId": "B"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 78 AND 96)\norder by 1 desc\nlimit 1",
+            "refId": "C"
+          }
+        ],
+        "title": "$period Percentiles",
+        "transform": "table",
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "columns": [],
+        "datasource": "mysql",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 4.8,
+          "x": 14.399999999999999,
+          "y": 9
+        },
+        "id": 27,
+        "links": [],
+        "minSpan": 2,
+        "pageSize": null,
+        "repeat": null,
+        "repeatDirection": "h",
+        "repeatIteration": 1542316867283,
+        "repeatPanelId": 14,
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          },
+          "period": {
+            "selected": true,
+            "text": "Icarus",
+            "value": "Icarus"
+          }
+        },
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 0,
+          "desc": true
+        },
+        "styles": [
+          {
+            "alias": "Hours",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "status_duration_hours",
+            "thresholds": [
+              ""
+            ],
+            "type": "number",
+            "unit": "h"
+          },
+          {
+            "alias": "Percentile",
+            "colorMode": "row",
+            "colors": [
+              "#508642",
+              "rgba(237, 129, 40, 0.89)",
+              "#cca300"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "percentile_rank",
+            "thresholds": [
+              "56",
+              "78",
+              "100"
+            ],
+            "type": "number",
+            "unit": "percent"
+          },
+          {
+            "alias": "",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "/.*/",
+            "thresholds": [],
+            "type": "string",
+            "unit": "short"
+          }
+        ],
+        "targets": [
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 25 AND 55)\norder by 1 desc\nlimit 1",
+            "refId": "A"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 56 AND 77)\norder by 1 desc\nlimit 1\n   ",
+            "refId": "B"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 78 AND 96)\norder by 1 desc\nlimit 1",
+            "refId": "C"
+          }
+        ],
+        "title": "$period Percentiles",
+        "transform": "table",
+        "transparent": true,
+        "type": "table"
+      },
+      {
+        "columns": [],
+        "datasource": "mysql",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 4.8,
+          "x": 19.2,
+          "y": 9
+        },
+        "id": 28,
+        "links": [],
+        "minSpan": 2,
+        "pageSize": null,
+        "repeat": null,
+        "repeatDirection": "h",
+        "repeatIteration": 1542316867283,
+        "repeatPanelId": 14,
+        "scopedVars": {
+          "issue_type": {
+            "selected": true,
+            "text": "Story",
+            "value": "Story"
+          },
+          "period": {
+            "selected": true,
+            "text": "Joy",
+            "value": "Joy"
+          }
+        },
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 0,
+          "desc": true
+        },
+        "styles": [
+          {
+            "alias": "Hours",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "status_duration_hours",
+            "thresholds": [
+              ""
+            ],
+            "type": "number",
+            "unit": "h"
+          },
+          {
+            "alias": "Percentile",
+            "colorMode": "row",
+            "colors": [
+              "#508642",
+              "rgba(237, 129, 40, 0.89)",
+              "#cca300"
+            ],
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "percentile_rank",
+            "thresholds": [
+              "56",
+              "78",
+              "100"
+            ],
+            "type": "number",
+            "unit": "percent"
+          },
+          {
+            "alias": "",
+            "colorMode": null,
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 2,
+            "mappingType": 1,
+            "pattern": "/.*/",
+            "thresholds": [],
+            "type": "string",
+            "unit": "short"
+          }
+        ],
+        "targets": [
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 25 AND 55)\norder by 1 desc\nlimit 1",
+            "refId": "A"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 56 AND 77)\norder by 1 desc\nlimit 1\n   ",
+            "refId": "B"
+          },
+          {
+            "alias": "",
+            "format": "table",
+            "rawSql": "select * from (\nSELECT\n  ROUND(((@rank - rank) / @rank) * 100, 2) AS percentile_rank, c.status_duration_hours as status_duration_hours\nFROM\n  (SELECT\n     *,\n     @prev:=@curr,\n     @curr:=status_duration_hours,\n     @rank:=IF(@prev = @curr, @rank, @rank + 1) AS rank\n   FROM\n     (\n       SELECT issue_id, sum(status_duration_hours) as status_duration_hours FROM issue_duration_in_status\n       where status_name in ($status)\n             and planning_period in ($period)\n             and issue_type in ($issue_type)\n             and team in ($team)\n             and $__timeFilter(status_end)\n             group by issue_id\n     ) AS a,\n     (SELECT @curr:= null, @prev:= null, @rank:= 0) AS b\n   ORDER BY status_duration_hours DESC) AS c) as d\nwhere (d.percentile_rank BETWEEN 78 AND 96)\norder by 1 desc\nlimit 1",
+            "refId": "C"
+          }
+        ],
+        "title": "$period Percentiles",
+        "transform": "table",
+        "transparent": true,
+        "type": "table"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 16,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "allValue": null,
+          "current": {
+            "text": "Story",
+            "value": "Story"
+          },
+          "datasource": "mysql",
+          "hide": 0,
+          "includeAll": false,
+          "label": null,
+          "multi": true,
+          "name": "issue_type",
+          "options": [],
+          "query": "select distinct issue_type from issue_duration_in_status",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "allValue": null,
+          "current": {
+            "selected": false,
+            "tags": [],
+            "text": "In Development + On Hold + Testing In Progress + To Be Tested + Waiting for Review",
+            "value": [
+              "In Development",
+              "On Hold",
+              "Testing In Progress",
+              "To Be Tested",
+              "Waiting for Review"
+            ]
+          },
+          "datasource": "mysql",
+          "hide": 0,
+          "includeAll": false,
+          "label": null,
+          "multi": true,
+          "name": "status",
+          "options": [],
+          "query": "select distinct status_name from issue_duration_in_status",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 5,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "allValue": null,
+          "current": {
+            "selected": false,
+            "tags": [],
+            "text": "Freedom + Griffin + Hawk + Icarus + Joy",
+            "value": [
+              "Freedom",
+              "Griffin",
+              "Hawk",
+              "Icarus",
+              "Joy"
+            ]
+          },
+          "datasource": "mysql",
+          "hide": 0,
+          "includeAll": false,
+          "label": null,
+          "multi": true,
+          "name": "period",
+          "options": [],
+          "query": "select distinct planning_period from issue_duration_in_status",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "allValue": null,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          },
+          "datasource": "mysql",
+          "hide": 0,
+          "includeAll": true,
+          "label": null,
+          "multi": true,
+          "name": "team",
+          "options": [],
+          "query": "select distinct team from issue_duration_in_status",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "2018-01-15T06:00:00.000Z",
+      "to": "2018-10-19T15:54:43.117Z"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
+    },
+    "timezone": "",
+    "title": "Jira Metrics - Percentiles over Time - Team - 2",
+    "uid": "12r6X2Bmz",
+    "version": 18
+  }
